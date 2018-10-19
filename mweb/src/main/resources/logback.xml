@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- scan="true"    当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。 -->
+<!--  scanPeriod="30 seconds"   设置每30秒自动扫描,若没有指定具体单位则以milliseconds为标准(单位:milliseconds, seconds, minutes or hours)  -->
+<!-- debug="false"当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。-->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- 上下文名称  -->
+    <contextName>logback</contextName>
+
+    <!-- 存放日志文件路径 -->
+    <property name="Log_Home" value="C:/Users/wangyuanhang/Desktop/log"/>
+
+    <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <Encoding>UTF-8</Encoding>
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%highlight 高亮显示,%M:%L 显示方法名和行号,%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符
+                具体详情见: https://logback.qos.ch/manual/layouts.html -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %cyan(%logger{50}) %highlight({%M:%L}) - %highlight(%msg%n)</pattern>
+            <!--<pattern>%highlight(%-5level) cyan(%logger{50}) %highlight({%M:%L}) - %highlight(%msg%n)</pattern>-->
+        </encoder>
+    </appender>
+
+    <!-- INFO级别 -->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 级别过滤器 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 设置过滤级别 -->
+            <level>INFO</level>
+            <!-- 用于配置符合过滤条件的操作 -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 用于配置不符合过滤条件的操作 -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <Encoding>UTF-8</Encoding>
+
+        <!-- 根据时间来制定滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <Prudent>true</Prudent>
+            <!-- 每个小时生成一个文件  %d{yyyy-MM-dd-HH} DatePattern-->
+            <FileNamePattern>
+                ${Log_Home}/%d{yyyy-MM-dd-HH}.log
+            </FileNamePattern>
+        </rollingPolicy>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} -%msg%n
+            </Pattern>
+        </layout>
+
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%highlight 高亮显示,%M:%L 显示方法名和行号,%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符
+                具体详情见: https://logback.qos.ch/manual/layouts.html -->
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{50}) %highlight({%M:%L}) - %highlight(%msg%n)</Pattern>
+        </encoder>
+    </appender>
+
+    <!-- 生成error日志 一天生成一个-->
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>  <!--//打印error-->
+        </filter>
+        <Encoding>UTF-8</Encoding>
+
+        <!-- 根据时间来制定滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <Prudent>true</Prudent>
+            <!-- 每天生成一个文件 -->
+            <FileNamePattern>
+                ${Log_Home}/error/%d{yyyy-MM-dd}-error.log
+            </FileNamePattern>
+        </rollingPolicy>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} -%msg%n
+            </Pattern>
+        </layout>
+
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%highlight 高亮显示,%M:%L 显示方法名和行号,%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符
+                具体详情见: https://logback.qos.ch/manual/layouts.html -->
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{50}) %highlight({%M:%L}) - %highlight(%msg%n)</Pattern>
+        </encoder>
+    </appender>
+
+    <!-- 控制java下面包的打印,没设置等级,将继承上级root的等级 -->
+    <logger name="com.wyh.mvnt.mweb"/>
+
+    <!-- 将springframework.web包下的类日志级别设置为DEBUG,出现4XX错误,设置将看到更多的信息-->
+    <logger name="org.springframework.web" level="DEBUG"/>
+
+    <!-- 当前日志总级别为TRACE、DEBUG、INFO、 WARN、ERROR、ALL和 OF -->
+    <!-- the level of the root level is set to DEBUG by default.       -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE_INFO"/>
+        <appender-ref ref="fileErrorLog"/>
+    </root>
+
+</configuration>
